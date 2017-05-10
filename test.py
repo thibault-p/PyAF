@@ -4,7 +4,7 @@ from emulators.advmame_emulator import AdvmameEmulator
 
 logging.basicConfig(level=logging.INFO)
 
-emu = AdvmameEmulator('/tmp/adv', '/tmp')
+emu = AdvmameEmulator('advmame', '/tmp')
 
 
 emu.scanForRoms()

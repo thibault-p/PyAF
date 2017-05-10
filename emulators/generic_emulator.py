@@ -11,13 +11,18 @@ class GenericEmulator(object):
 
     def scanForRoms(self):
         logger = logging.getLogger('pyaf')
+        self.generateSupportedRomsFile()
+
         logger.info('Retrieve list of roms contained in: %s', self.romsPath)
-        files = [f for f in listdir(self.romsPath) if isfile(join(self.romsPath, f))]
+        files = [f for f in sorted(listdir(self.romsPath)) if isfile(join(self.romsPath, f))]
         logger.info('Found %d files.', len(files))
         for f in files:
             filename, fileExt = splitext(f)
             if fileExt == '.zip':
                 self.checkRomValidity(f)
+
+    def generateSupportedRomsFile(self):
+        raise NotImplementedError
 
     def checkRomValidity(self, romPath):
         raise NotImplementedError
