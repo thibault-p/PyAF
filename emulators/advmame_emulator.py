@@ -1,6 +1,9 @@
 import logging
 import subprocess
-from  xml.etree import cElementTree
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
 
 from os.path import join
 from tempfile import gettempdir
@@ -50,7 +53,32 @@ class AdvmameEmulator(GenericEmulator):
         logger = logging.getLogger('pyaf')
         logger.info('Check validity of rom: %s', romName)
         with open(AdvmameEmulator.default_tmp_roms_list, 'r') as file:
-            for event, elem in cElementTree.iterparse(file):
+            for event, elem in ET.iterparse(file):
                 if elem.tag == 'game':
-                    logger.info('Found a game: %s', elem.itertext())
+                    game = self.parseGame(elem)
+
                     elem.clear()
+
+    def compareGame(self):
+        pass
+
+
+
+
+    def parseGame(self, gameNode):
+        logger = logging.getLogger('pyaf')
+        attribs = gameNode.attrib
+        game = {'roms': []}
+        if not 'runnable' in attribs or attribs['runnable'] == 'no':
+            #Not a game, bios or something
+            return None
+        game['name'] = attribs['name']
+        for child in gameNode:
+            if child.tag == 'rom':
+
+                if not 'name' in child.attrib or not 'crc' in child.attrib:
+                    logger.warning('Rom entry of game %s is not valid', child.attrib)
+                    return None
+                game['roms'].append({'name': child.attrib['name'], 'crc': child.attrib['name']})
+
+        return game
