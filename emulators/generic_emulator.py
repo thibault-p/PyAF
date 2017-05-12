@@ -16,7 +16,7 @@ class GenericEmulator(object):
         self.generateSupportedRomsFile()
 
         validRoms = []
-        unvalidRoms = []
+        invalidRoms = []
 
         if not folder:
             folder = self.romsPath
@@ -36,8 +36,15 @@ class GenericEmulator(object):
                 continue
             if r['name'] in romsToScan:
                 errors = self.checkRomValidity(join(folder, r['name'] + '.zip'), r)
-
-
+                if len(errors) > 0:
+                    invalidRoms.append({
+                        'name': r['name'], 'errors': errors
+                    })
+                else:
+                    validRoms.append({
+                        'name': r['name'], 'video': r['video']
+                    })
+        return validRoms, invalidRoms
 
     def generateSupportedRomsFile(self):
         raise NotImplementedError
